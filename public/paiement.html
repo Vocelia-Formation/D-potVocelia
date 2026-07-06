@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocelia — Paiement</title>
+<style>
+:root { --ink:#1C1F2E; --teal:#0B7A75; --teal2:#12B5AE; --coral:#E8603C; --sand:#F6F1E9; --cream:#FFFDF8; --muted:#6B7280; --border:#D8CEBC; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',Arial,sans-serif; background:var(--sand); color:var(--ink); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem; }
+.card { background:var(--cream); border:1px solid var(--border); border-radius:16px; padding:2.5rem; max-width:500px; width:100%; box-shadow:0 4px 20px rgba(0,0,0,0.06); text-align:center; }
+h1 { font-size:1.5rem; margin-bottom:0.5rem; }
+.ref { color:var(--muted); font-size:0.9rem; margin-bottom:1.5rem; }
+.total { font-size:2rem; font-weight:800; color:var(--teal); margin:1rem 0; }
+.options { display:flex; flex-direction:column; gap:0.8rem; margin:1.5rem 0; }
+.pay-btn { padding:1rem; border-radius:10px; border:2px solid var(--border); background:var(--cream); cursor:pointer; font-size:1rem; font-weight:600; transition:all 0.2s; }
+.pay-btn:hover { border-color:var(--teal); background:rgba(11,122,117,0.05); }
+.pay-btn .amount { font-size:1.3rem; color:var(--teal); }
+.pay-btn .label { font-size:0.85rem; color:var(--muted); }
+.secure { font-size:0.8rem; color:var(--muted); margin-top:1rem; }
+.error { color:var(--coral); padding:1rem; background:rgba(232,96,60,0.1); border-radius:8px; margin-bottom:1rem; }
+#loading { display:none; font-size:0.95rem; color:var(--teal); margin-top:1rem; }
+</style>
+</head>
+<body>
+<div class="card" id="card">
+  <h1>💳 Paiement sécurisé</h1>
+  <div class="ref" id="ref">Chargement...</div>
+  <div id="content"></div>
+  <div id="loading">⏳ Redirection vers le paiement...</div>
+  <div class="secure">🔒 Paiement sécurisé par Stripe · Données chiffrées</div>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const devisId = params.get('devis');
+const cancelled = params.get('cancelled');
+
+if (!devisId) {
+  document.getElementById('content').innerHTML = '<div class="error">Lien de paiement invalide.</div>';
+} else {
+  fetch('/api/devis/' + devisId)
+    .then(r => r.json())
+    .then(data => {
+      if (data.error) { document.getElementById('content').innerHTML = '<div class="error">Devis introuvable.</div>'; return; }
+      document.getElementById('ref').textContent = 'Réf: ' + data.ref;
+      
+      const totalStr = data.total || '0';
+      const totalNum = parseFloat(totalStr.replace(/[^\d,.-]/g, '').replace(',', '.'));
+      const acompte = Math.round(totalNum * 0.3);
+      const solde = Math.round(totalNum * 0.7);
+      
+      document.getElementById('content').innerHTML =
+        (cancelled ? '<div class="error">Paiement annulé. Vous pouvez réessayer.</div>' : '') +
+        '<div class="total">' + totalStr + '</div>' +
+        '<p style="color:var(--muted);margin-bottom:1rem;">' + data.langue + ' — ' + data.parcours + '</p>' +
+        '<div class="options">' +
+          '<button class="pay-btn" onclick="pay(\'total\')"><div class="amount">' + totalNum + ' €</div><div class="label">Paiement intégral</div></button>' +
+          '<button class="pay-btn" onclick="pay(\'acompte\')"><div class="amount">' + acompte + ' €</div><div class="label">Acompte 30% · Solde de ' + solde + ' € avant le début</div></button>' +
+        '</div>';
+    })
+    .catch(() => { document.getElementById('content').innerHTML = '<div class="error">Erreur de connexion.</div>'; });
+}
+
+async function pay(mode) {
+  document.getElementById('loading').style.display = 'block';
+  try {
+    const resp = await fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ devisId, mode })
+    });
+    const data = await resp.json();
+    if (data.url) window.location.href = data.url;
+    else { document.getElementById('loading').style.display = 'none'; alert('Erreur: ' + (data.error || 'Réessayez')); }
+  } catch (e) { document.getElementById('loading').style.display = 'none'; alert('Erreur de connexion'); }
+}
+</script>
+</body>
+</html>

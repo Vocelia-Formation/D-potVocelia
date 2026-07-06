@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocelia — Configurateur de Devis</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+:root {
+  --ink: #1C1F2E;
+  --paper: #F6F1E9;
+  --accent: #0B7A75;
+  --accent-light: #12B5AE;
+  --accent-glow: #0B7A75;
+  --accent-bg: #E0F0EF;
+  --warm: #E8603C;
+  --warm-light: #F07854;
+  --miro-yellow: #E8603C;
+  --miro-green: #0B7A75;
+  --muted: #6B7280;
+  --border: #D8CEBC;
+  --card: #FFFDF8;
+  --shadow: 0 2px 20px rgba(28,31,46,0.06);
+  --shadow-lg: 0 8px 40px rgba(28,31,46,0.10);
+  --radius: 14px;
+  --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── HEADER ── */
+.header {
+  background: var(--ink);
+  color: white;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.header::before {
+  content: '';
+  position: absolute;
+  top: -60%;
+  right: -10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--miro-yellow) 0%, transparent 70%);
+  opacity: 0.2;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: 15px;
+  right: 60px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--warm);
+  opacity: 0.6;
+  box-shadow:
+    -70px -30px 0 15px var(--miro-yellow),
+    -140px 5px 0 8px var(--accent),
+    50px -50px 0 6px var(--miro-green);
+}
+.header-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2.5rem 2rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+.logo span { color: var(--warm); }
+.header h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  line-height: 1.2;
+}
+.header p {
+  margin-top: 0.6rem;
+  font-size: 1.05rem;
+  opacity: 0.7;
+  max-width: 500px;
+}
+
+/* ── PROGRESS BAR ── */
+.progress-wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 2rem 0;
+}
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+}
+.step-dot {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition: all 0.4s cubic-bezier(.4,0,.2,1);
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+.step-dot.active {
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 0 0 5px var(--accent-bg);
+}
+.step-dot.done {
+  background: var(--warm);
+  color: white;
+}
+.step-line {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  transition: background 0.4s;
+}
+.step-line.done { background: var(--warm); }
+.step-labels {
+  display: flex;
+  margin-top: 0.6rem;
+}
+.step-label {
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-align: center;
+  transition: color 0.3s;
+  flex-shrink: 0;
+  width: 38px;
+}
+.step-label-spacer {
+  flex: 1;
+}
+.step-label.active { color: var(--accent); font-weight: 600; }
+
+/* ── MAIN ── */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 2rem;
+  align-items: start;
+}
+@media (max-width: 860px) {
+  .main { grid-template-columns: 1fr; }
+}
+
+/* ── CARD ── */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+  padding: 2rem;
+  animation: fadeUp 0.5s ease;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(16px); }
+  to { opacity:1; transform: translateY(0); }
+}
+
+.card-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+}
+.card-subtitle {
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.8rem;
+}
+
+/* ── OPTION GRID ── */
+.option-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.8rem;
+}
+.option-card {
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+}
+.option-card:hover {
+  border-color: var(--accent-light);
+  background: var(--accent-bg);
+}
+.option-card.selected {
+  border-color: var(--accent);
+  background: var(--accent-bg);
+  box-shadow: 0 0 0 3px rgba(11,122,117,0.18);
+}
+.option-card .emoji {
+  font-size: 1.8rem;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+.option-card .label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+.option-card .sub {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+  display: block;
+}
+
+/* ── SLIDER / INPUTS ── */
+.field-group {
+  margin-bottom: 1.5rem;
+}
+.field-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.field-label .icon { font-size: 1.1rem; }
+input[type="range"] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--border);
+  outline: none;
+  margin-top: 0.3rem;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(11,122,117,0.3);
+}
+.range-value {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0.5rem 0 0.2rem;
+  font-family: 'Playfair Display', serif;
+}
+.range-hint {
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+input[type="text"], input[type="email"], input[type="tel"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color 0.25s;
+  background: var(--card);
+}
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ── BUTTONS ── */
+.btn-row {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 2rem;
+  justify-content: space-between;
+}
+.btn {
+  padding: 0.8rem 1.8rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.btn-primary {
+  background: var(--accent);
+  color: white;
+}
+.btn-primary:hover { background: var(--accent-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+.btn-secondary {
+  background: transparent;
+  color: var(--muted);
+  border: 2px solid var(--border);
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+.btn-warm {
+  background: var(--warm);
+  color: white;
+}
+.btn-warm:hover { background: var(--warm-light); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── SIDEBAR RECAP ── */
+.recap {
+  position: sticky;
+  top: 2rem;
+}
+.recap-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin-bottom: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.recap-line {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+}
+.recap-line .rlabel { color: var(--muted); }
+.recap-line .rvalue { font-weight: 600; }
+.recap-total {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--accent);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.recap-total .rlabel {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.recap-total .rvalue {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+.recap-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: 0.8rem;
+  line-height: 1.5;
+}
+
+/* ── SUMMARY FINAL STEP ── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.summary-item {
+  background: var(--paper);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+}
+.summary-item .slabel {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.3rem;
+}
+.summary-item .svalue {
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.email-section {
+  background: linear-gradient(135deg, #FDECE6, var(--card));
+  border-radius: var(--radius-sm);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border-left: 4px solid var(--miro-yellow);
+}
+.email-section h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+}
+.email-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+@media (max-width: 600px) {
+  .email-row { grid-template-columns: 1fr; }
+  .summary-grid { grid-template-columns: 1fr; }
+}
+.action-row {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+.toast {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--accent);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(.4,0,.2,1);
+  z-index: 100;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+
+/* ── PDF HIDDEN ── */
+#pdf-content {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 700px;
+  font-family: 'DM Sans', Helvetica, sans-serif;
+  color: #1a1a2e;
+  background: white;
+  padding: 3rem;
+  z-index: -1;
+  opacity: 0;
+  pointer-events: none;
+}
+#pdf-content .pdf-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 3px solid var(--accent);
+  padding-bottom: 1.5rem;
+  margin-bottom: 2rem;
+}
+#pdf-content .pdf-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+#pdf-content .pdf-logo span { color: var(--accent); }
+#pdf-content .pdf-date {
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: right;
+}
+#pdf-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+}
+#pdf-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 2rem;
+}
+#pdf-content th {
+  text-align: left;
+  background: var(--accent-bg);
+  padding: 0.7rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+#pdf-content td {
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+#pdf-content .pdf-total {
+  text-align: right;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 3px solid var(--accent);
+}
+#pdf-content .pdf-footer {
+  margin-top: 3rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">Voce<span>lia</span></div>
+    <h1>Estimez votre formation<br>en quelques clics</h1>
+    <p>Configurez votre programme sur mesure et obtenez un devis instantané.</p>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-wrap">
+  <div class="progress-bar" id="progressBar"></div>
+  <div class="step-labels" id="stepLabels"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div id="formArea"></div>
+  <div class="card recap" id="recapSidebar">
+    <div class="recap-title">📋 Votre devis</div>
+    <div id="recapLines"></div>
+    <div class="recap-total" id="recapTotal" style="display:none">
+      <span class="rlabel">Total estimé</span>
+      <span class="rvalue" id="totalPrice">0 €</span>
+    </div>
+    <div class="recap-note">* Devis indicatif, valable 30 jours. Le tarif définitif sera confirmé par notre équipe après étude de votre dossier.</div>
+  </div>
+</div>
+
+<!-- PDF HIDDEN CONTENT -->
+<div id="pdf-content"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════
+//  VOCELIA — Configurateur de Devis v2
+//  Modèle : Parcours + Modules
+// ═══════════════════════════════════════
+
+const STEPS = [
+  { id:"profil", label:"Profil" },
+  { id:"langue", label:"Langue" },
+  { id:"parcours", label:"Parcours" },
+  { id:"formule", label:"Formule" },
+  { id:"modules", label:"Modules" },
+  { id:"options", label:"Options" },
+  { id:"dates", label:"Contact" },
+  { id:"recap", label:"Récap" }
+];
+
+const PROFILS = [
+  { value:"entreprise", emoji:"🏢", label:"Entreprise", sub:"Former vos collaborateurs" },
+  { value:"particulier", emoji:"👤", label:"Particulier", sub:"Se former à titre personnel" }
+];
+
+const LANGUES = [
+  { value:"fle", emoji:"🇫🇷", label:"FLE (Français professionnel)" },
+  { value:"anglais", emoji:"🇬🇧", label:"Anglais" },
+  { value:"espagnol", emoji:"🇪🇸", label:"Espagnol" }
+];
+
+const PARCOURS = [
+  { value:"cap", label:"Cap", sub:"Poser les bases et oser s\u2019exprimer", niveau:"Pré-A1 / A2", duree:20, prixIndiv:1300, prixGroupe:650, color:"#0B7A75" },
+  { value:"elan", label:"Élan", sub:"Gagner en aisance et en autonomie", niveau:"A2 / B1+", duree:15, prixIndiv:975, prixGroupe:490, color:"#12B5AE" },
+  { value:"essor", label:"Essor", sub:"Affirmer sa posture professionnelle", niveau:"B1+ / C1", duree:15, prixIndiv:975, prixGroupe:490, color:"#0B7A75" },
+  { value:"horizon", label:"Horizon", sub:"Maîtriser les enjeux complexes", niveau:"C1 / C2", duree:15, prixIndiv:975, prixGroupe:490, color:"#12B5AE" }
+];
+
+const MODULES = {
+  "Communication orale": [
+    { id:"m1", label:"Prendre la parole avec aisance en contexte professionnel", niveau:"B1", duree:7, prix:420 },
+    { id:"m2", label:"Présenter vos idées avec clarté et conviction", niveau:"B1+", duree:10, prix:600 },
+    { id:"m3", label:"Négocier, argumenter, conclure", niveau:"B2", duree:14, prix:840 },
+    { id:"m4", label:"Gérer vos appels professionnels avec fluidité", niveau:"B1", duree:7, prix:420 },
+    { id:"m5", label:"Répondre aux objections avec assurance", niveau:"B1", duree:7, prix:420 }
+  ],
+  "Communication écrite": [
+    { id:"m6", label:"Rédiger des emails clairs et professionnels", niveau:"A2", duree:7, prix:420 },
+    { id:"m7", label:"Rédiger des comptes-rendus clairs et structurés", niveau:"B1", duree:10, prix:600 },
+    { id:"m8", label:"Rédiger des consignes claires et comprises de tous", niveau:"B1", duree:7, prix:420 }
+  ],
+  "Relation client & accueil": [
+    { id:"m9", label:"Accueillir, rassurer et fidéliser vos clients", niveau:"A2", duree:7, prix:420 },
+    { id:"m10", label:"Présenter votre offre avec conviction", niveau:"B1", duree:7, prix:420 },
+    { id:"m11", label:"Désamorcer un conflit client", niveau:"B1", duree:10, prix:600 },
+    { id:"m12", label:"Gérer les conversations difficiles avec efficacité", niveau:"B1", duree:10, prix:600 }
+  ],
+  "Coordination internationale": [
+    { id:"m13", label:"Animer une réunion avec aisance", niveau:"B1", duree:10, prix:600 },
+    { id:"m14", label:"Présenter et défendre vos projets à l\u2019international", niveau:"B1", duree:7, prix:420 },
+    { id:"m15", label:"Communiquer efficacement avec des équipes internationales", niveau:"B2", duree:10, prix:600 }
+  ]
+};
+
+const IMMERSIONS = [
+  { value:"none", label:"Aucune immersion", prix:0 },
+  { value:"demi", label:"Demi-journée intensive", sub:"3h30 · Présentiel sur mesure", prix:260 },
+  { value:"complete", label:"Journée intensive complète", sub:"7h · Pause déjeuner avec le formateur", prix:490 }
+];
+
+let state = {
+  step:0, profil:null, langue:null, parcours:null,
+  formule:null, participants:2, modules:[],
+  immersion:"none", modalite:null, datesouhait:"",
+  nom:"", email:"", tel:"", societe:"", message:""
+};
+
+const isPro = () => state.profil === "entreprise";
+const langLabel = () => ({fle:"FLE",anglais:"Anglais",espagnol:"Espagnol"})[state.langue] || "";
+const parcoursObj = () => PARCOURS.find(p => p.value === state.parcours);
+
+// ── LEVEL FILTERING ──
+const LEVEL_VAL = {"A1":1,"A2":2,"B1":3,"B1+":3.5,"B2":4,"C1":5,"C2":6};
+const PARCOURS_MAX = {"cap":2,"elan":3.5,"essor":5,"horizon":6}; // A2, B1+, C1, C2
+
+function moduleOk(m) {
+  if (!state.parcours) return true;
+  return LEVEL_VAL[m.niveau] <= (PARCOURS_MAX[state.parcours] || 6);
+}
+
+// When parcours changes, deselect modules that are now too high
+function cleanModules() {
+  var all = Object.values(MODULES).flat();
+  state.modules = state.modules.filter(function(mid) {
+    var m = all.find(function(x){return x.id===mid;});
+    return m && moduleOk(m);
+  });
+}
+
+function getModuleDiscount() {
+  const n = state.modules.length;
+  if (n >= 5) return 0.15;
+  if (n >= 3) return 0.10;
+  return 0;
+}
+
+function calcModulesRaw() {
+  const all = Object.values(MODULES).flat();
+  let t = 0;
+  state.modules.forEach(mid => { const m = all.find(x => x.id === mid); if(m) t += m.prix; });
+  return t;
+}
+
+function calcTotal() {
+  let total = 0;
+  const p = parcoursObj();
+  if (p) total += state.formule === "groupe" ? p.prixGroupe * state.participants : p.prixIndiv;
+  total += Math.round(calcModulesRaw() * (1 - getModuleDiscount()));
+  const imm = IMMERSIONS.find(i => i.value === state.immersion);
+  if (imm) total += imm.prix;
+  return total;
+}
+
+// ═══ RENDER ═══
+function render() {
+  renderProgress();
+  renderRecap();
+  const area = document.getElementById("formArea");
+  const fn = { profil:renderProfil, langue:renderLangue, parcours:renderParcours, formule:renderFormule, modules:renderModules, options:renderOptions, dates:renderDates, recap:renderRecapFinal };
+  (fn[STEPS[state.step].id])(area);
+}
+
+function renderProgress() {
+  const bar = document.getElementById("progressBar");
+  const labels = document.getElementById("stepLabels");
+  bar.innerHTML = STEPS.map((s,i) => {
+    const cls = i < state.step ? "done" : i === state.step ? "active" : "";
+    return '<div class="step-dot '+cls+'">'+(i < state.step ? "✓" : i+1)+'</div>' +
+           (i < STEPS.length-1 ? '<div class="step-line '+(i < state.step ? "done" : "")+'"></div>' : "");
+  }).join("");
+  labels.innerHTML = STEPS.map((s,i) =>
+    '<div class="step-label '+(i===state.step?"active":"")+'">' + s.label + '</div>' +
+    (i < STEPS.length-1 ? '<div class="step-label-spacer"></div>' : "")
+  ).join("");
+}
+
+function sel(key, val) { state[key] = val; if(key==="parcours") cleanModules(); render(); }
+function goNext() { if (state.step < STEPS.length-1 && canAdv()) { state.step++; render(); window.scrollTo({top:0,behavior:"smooth"}); } }
+function goBack() { if (state.step > 0) { state.step--; render(); window.scrollTo({top:0,behavior:"smooth"}); } }
+
+function canAdv() {
+  const id = STEPS[state.step].id;
+  if (id==="profil") return !!state.profil;
+  if (id==="langue") return !!state.langue;
+  if (id==="parcours") return !!state.parcours;
+  if (id==="formule") return !!state.formule;
+  if (id==="dates") return state.nom.length > 0 && state.email.length > 0;
+  return true;
+}
+
+function checkNav() {
+  const btns = document.querySelectorAll(".btn-primary");
+  btns.forEach(b => { if(b.textContent.includes("Suivant")) b.disabled = !canAdv(); });
+  renderRecap();
+}
+
+function nav() {
+  const isFirst = state.step === 0;
+  return '<div class="btn-row">' +
+    (isFirst ? "<div></div>" : '<button class="btn btn-secondary" onclick="goBack()">← Retour</button>') +
+    '<button class="btn btn-primary" '+(canAdv()?"":"disabled")+' onclick="goNext()">Suivant →</button>' +
+  '</div>';
+}
+
+function optGrid(options, key) {
+  return options.map(function(o) {
+    return '<div class="option-card '+(state[key]===o.value?"selected":"")+'" onclick="sel(\''+key+'\',\''+o.value+'\')">' +
+      '<span class="emoji">'+o.emoji+'</span>' +
+      '<span class="label">'+o.label+'</span>' +
+      (o.sub ? '<span class="sub">'+o.sub+'</span>' : "") +
+    '</div>';
+  }).join("");
+}
+
+// ═══ STEP RENDERERS ═══
+function renderProfil(area) {
+  area.innerHTML = '<div class="card">' +
+    '<div class="card-title">Vous êtes…</div>' +
+    '<div class="card-subtitle">Ce choix adaptera les options et tarifs à votre situation</div>' +
+    '<div class="option-grid">' + optGrid(PROFILS,"profil") + '</div>' +
+    nav() + '</div>';
+}
+
+function renderLangue(area) {
+  area.innerHTML = '<div class="card">' +
+    '<div class="card-title">Quelle langue souhaitez-vous apprendre ?</div>' +
+    '<div class="card-subtitle">Chaque parcours est disponible en anglais, espagnol et français professionnel</div>' +
+    '<div class="option-grid">' + optGrid(LANGUES,"langue") + '</div>' +
+    nav() + '</div>';
+}
+
+function renderParcours(area) {
+  var tx = isPro() ? "HT" : "TTC";
+  var html = '<div class="card">' +
+    '<div class="card-title">Choisissez votre parcours</div>' +
+    '<div class="card-subtitle">4 niveaux progressifs, calibrés selon le CECRL. Chaque parcours est complet et autonome.</div>' +
+    '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1rem;">';
+
+  PARCOURS.forEach(function(p) {
+    html += '<div class="option-card '+(state.parcours===p.value?"selected":"")+'" onclick="sel(\'parcours\',\''+p.value+'\')" style="text-align:left;padding:1.2rem;">' +
+      '<div style="font-family:\'Playfair Display\',serif;font-size:1.3rem;font-weight:800;color:'+p.color+';margin-bottom:0.2rem;">'+p.label+'</div>' +
+      '<div style="font-size:0.82rem;color:var(--muted);font-style:italic;margin-bottom:0.8rem;">'+p.sub+'</div>' +
+      '<div style="margin-bottom:0.5rem;">' +
+        '<span style="font-size:0.72rem;font-weight:600;background:var(--accent-bg);color:var(--accent);padding:0.15rem 0.5rem;border-radius:50px;">Niveau '+p.niveau+'</span>' +
+        '<span style="font-size:0.82rem;font-weight:600;float:right;">'+p.duree+'h</span>' +
+      '</div>' +
+      '<div style="font-family:\'Playfair Display\',serif;font-size:1.4rem;font-weight:800;color:var(--accent);">'+p.prixIndiv.toLocaleString("fr-FR")+' € <span style="font-size:0.72rem;color:var(--muted);font-family:\'DM Sans\';font-weight:400;">'+tx+'</span></div>' +
+      '<div style="font-size:0.72rem;color:var(--muted);margin-top:0.15rem;">Groupe : '+p.prixGroupe+' €/participant</div>' +
+    '</div>';
+  });
+
+  html += '</div>' +
+    '<div style="margin-top:1rem;padding:0.8rem 1rem;background:var(--accent-bg);border-radius:var(--radius-sm);font-size:0.82rem;color:var(--accent);">' +
+    '<strong>Tarifs nets</strong> · Formations exonérées de TVA · Déplacements au-delà de 30 km sur devis</div>' +
+    nav() + '</div>';
+  area.innerHTML = html;
+}
+
+function renderFormule(area) {
+  var p = parcoursObj();
+  if(!p) return;
+  var tx = isPro() ? "HT" : "TTC";
+  var html = '<div class="card">' +
+    '<div class="card-title">Quelle formule ?</div>' +
+    '<div class="card-subtitle">Formule individuelle ou en groupe (2 à 6 personnes)</div>' +
+    '<div class="option-grid" style="grid-template-columns:1fr 1fr;">' +
+      '<div class="option-card '+(state.formule==="individuel"?"selected":"")+'" onclick="selFormule(\'individuel\')">' +
+        '<span class="emoji">👤</span><span class="label">Individuelle</span>' +
+        '<div style="font-family:\'Playfair Display\',serif;font-size:1.3rem;font-weight:800;color:var(--accent);margin-top:0.5rem;">'+p.prixIndiv.toLocaleString("fr-FR")+' €</div>' +
+        '<span class="sub">'+tx+' · '+p.duree+'h</span></div>' +
+      '<div class="option-card '+(state.formule==="groupe"?"selected":"")+'" onclick="selFormule(\'groupe\')">' +
+        '<span class="emoji">👥</span><span class="label">Groupe</span>' +
+        '<div style="font-family:\'Playfair Display\',serif;font-size:1.3rem;font-weight:800;color:var(--accent);margin-top:0.5rem;">'+p.prixGroupe+' € <span style="font-size:0.7rem;font-weight:400;color:var(--muted);">/pers.</span></div>' +
+        '<span class="sub">'+tx+' · 2 à 6 pers. · '+p.duree+'h</span></div>' +
+    '</div>';
+
+  if (state.formule==="groupe") {
+    html += '<div class="field-group" style="margin-top:1.5rem;">' +
+      '<div class="field-label"><span class="icon">👥</span> Nombre de participants</div>' +
+      '<input type="range" min="2" max="6" value="'+state.participants+'" oninput="updPart(this.value)">' +
+      '<div class="range-value" id="partVal">'+state.participants+' participants</div>' +
+      '<div class="range-hint" id="partHint">Total : '+(p.prixGroupe * state.participants).toLocaleString("fr-FR")+' € '+tx+'</div>' +
+    '</div>';
+  }
+  html += nav() + '</div>';
+  area.innerHTML = html;
+}
+
+function selFormule(v) {
+  state.formule = v;
+  if (v==="individuel") state.participants = 1;
+  else if (state.participants < 2) state.participants = 2;
+  render();
+}
+
+function updPart(v) {
+  state.participants = parseInt(v);
+  var p = parcoursObj();
+  var tx = isPro() ? "HT" : "TTC";
+  document.getElementById("partVal").textContent = v + " participants";
+  document.getElementById("partHint").textContent = "Total : " + (p.prixGroupe * state.participants).toLocaleString("fr-FR") + " € " + tx;
+  renderRecap();
+}
+
+function renderModules(area) {
+  var cats = Object.entries(MODULES);
+  var n = state.modules.length;
+  var d = getModuleDiscount();
+  var dLabel = d > 0 ? ' <span style="background:var(--warm);color:white;padding:0.15rem 0.5rem;border-radius:50px;font-size:0.72rem;font-weight:600;">-'+Math.round(d*100)+'%</span>' : "";
+  var p = parcoursObj();
+  var pLabel = p ? p.label + " (" + p.niveau + ")" : "";
+
+  var html = '<div class="card">' +
+    '<div class="card-title">Modules d\u2019expertise m\u00e9tier <span style="font-size:0.8rem;font-weight:400;color:var(--muted);">(optionnel)</span></div>' +
+    '<div class="card-subtitle">Enrichissez votre parcours avec des modules cibl\u00e9s sur vos enjeux professionnels.'+dLabel+'</div>' +
+    '<div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.8rem;">' +
+      '<div style="font-size:0.78rem;padding:0.3rem 0.7rem;border-radius:50px;background:'+(n>=3?"var(--accent-bg)":"var(--paper)")+';border:1px solid '+(n>=3?"var(--accent)":"var(--border)")+';color:'+(n>=3?"var(--accent)":"var(--muted)")+';">3 modules \u2192 <strong>-10%</strong></div>' +
+      '<div style="font-size:0.78rem;padding:0.3rem 0.7rem;border-radius:50px;background:'+(n>=5?"var(--accent-bg)":"var(--paper)")+';border:1px solid '+(n>=5?"var(--accent)":"var(--border)")+';color:'+(n>=5?"var(--accent)":"var(--muted)")+';">5 modules \u2192 <strong>-15%</strong></div>' +
+      '<div style="font-size:0.78rem;color:var(--muted);padding:0.3rem 0;">S\u00e9lectionn\u00e9s : <strong>'+n+'</strong></div>' +
+    '</div>' +
+    '<div style="font-size:0.78rem;color:var(--muted);margin-bottom:1.2rem;padding:0.5rem 0.8rem;background:var(--paper);border-radius:6px;border-left:3px solid var(--accent);">Seuls les modules accessibles \u00e0 votre niveau <strong>'+pLabel+'</strong> sont s\u00e9lectionnables. Les autres s\u2019ouvriront avec un parcours plus avanc\u00e9.</div>';
+
+  cats.forEach(function(entry) {
+    var cat = entry[0], mods = entry[1];
+    var availableInCat = mods.filter(function(m){ return moduleOk(m); }).length;
+    html += '<div style="margin-bottom:1.5rem;">' +
+      '<div style="font-family:\'Playfair Display\',serif;font-size:1rem;font-weight:700;color:var(--accent);margin-bottom:0.6rem;padding-bottom:0.3rem;border-bottom:2px solid var(--accent-bg);">'+cat+' <span style="font-size:0.75rem;font-weight:400;color:var(--muted);">('+availableInCat+'/'+mods.length+' accessibles)</span></div>';
+    mods.forEach(function(m) {
+      var ok = moduleOk(m);
+      var isSel = state.modules.includes(m.id);
+      if (ok) {
+        html += '<label style="display:flex;align-items:flex-start;gap:0.7rem;padding:0.6rem 0.8rem;border-radius:var(--radius-sm);cursor:pointer;transition:background 0.2s;border:1px solid '+(isSel?"var(--accent)":"transparent")+';background:'+(isSel?"var(--accent-bg)":"transparent")+';margin-bottom:0.4rem;">' +
+          '<input type="checkbox" '+(isSel?"checked":"")+' onchange="togMod(\''+m.id+'\')" style="margin-top:0.3rem;accent-color:var(--accent);width:16px;height:16px;flex-shrink:0;">' +
+          '<div style="flex:1;">' +
+            '<div style="font-weight:600;font-size:0.88rem;">'+m.label+'</div>' +
+            '<div style="display:flex;gap:0.6rem;margin-top:0.2rem;">' +
+              '<span style="font-size:0.72rem;background:var(--paper);padding:0.1rem 0.4rem;border-radius:4px;border:1px solid var(--border);">Niveau '+m.niveau+'</span>' +
+              '<span style="font-size:0.72rem;color:var(--muted);">'+m.duree+'h</span>' +
+            '</div></div>' +
+          '<div style="font-weight:700;color:var(--accent);font-size:0.92rem;white-space:nowrap;">'+m.prix+' \u20ac</div>' +
+        '</label>';
+      } else {
+        html += '<div style="display:flex;align-items:flex-start;gap:0.7rem;padding:0.6rem 0.8rem;border-radius:var(--radius-sm);border:1px solid transparent;margin-bottom:0.4rem;opacity:0.4;cursor:not-allowed;">' +
+          '<input type="checkbox" disabled style="margin-top:0.3rem;width:16px;height:16px;flex-shrink:0;">' +
+          '<div style="flex:1;">' +
+            '<div style="font-weight:600;font-size:0.88rem;">'+m.label+'</div>' +
+            '<div style="display:flex;gap:0.6rem;margin-top:0.2rem;">' +
+              '<span style="font-size:0.72rem;background:var(--paper);padding:0.1rem 0.4rem;border-radius:4px;border:1px solid var(--border);">\ud83d\udd12 Niveau '+m.niveau+' requis</span>' +
+              '<span style="font-size:0.72rem;color:var(--muted);">'+m.duree+'h</span>' +
+            '</div></div>' +
+          '<div style="font-weight:700;color:var(--muted);font-size:0.92rem;white-space:nowrap;">'+m.prix+' \u20ac</div>' +
+        '</div>';
+      }
+    });
+    html += '</div>';
+  });
+
+  html += nav() + '</div>';
+  area.innerHTML = html;
+}
+
+function togMod(mid) {
+  var all = Object.values(MODULES).flat();
+  var m = all.find(function(x){return x.id===mid;});
+  if (!m || !moduleOk(m)) return;
+  var idx = state.modules.indexOf(mid);
+  if (idx >= 0) state.modules.splice(idx, 1); else state.modules.push(mid);
+  render();
+}
+
+function renderOptions(area) {
+  var html = '<div class="card">' +
+    '<div class="card-title">Options complémentaires</div>' +
+    '<div class="card-subtitle">Immersion intensive et modalité de formation</div>' +
+    '<div style="margin-bottom:2rem;">' +
+      '<div class="field-label" style="margin-bottom:0.8rem;">⚡ Immersion intensive <span style="font-size:0.75rem;color:var(--muted);font-weight:400;">(optionnel)</span></div>' +
+      '<div style="display:grid;gap:0.8rem;">';
+
+  IMMERSIONS.forEach(function(im) {
+    html += '<div class="option-card '+(state.immersion===im.value?"selected":"")+'" onclick="sel(\'immersion\',\''+im.value+'\')" style="text-align:left;display:flex;justify-content:space-between;align-items:center;">' +
+      '<div><span class="label">'+im.label+'</span>'+(im.sub?'<div class="sub">'+im.sub+'</div>':"")+'</div>' +
+      (im.prix > 0 ? '<div style="font-weight:700;color:var(--accent);white-space:nowrap;">'+im.prix+' €</div>' : '<div style="color:var(--muted);font-size:0.85rem;">—</div>') +
+    '</div>';
+  });
+
+  html += '</div></div>' +
+    '<div><div class="field-label" style="margin-bottom:0.8rem;">📍 Modalité</div>' +
+    '<div class="option-grid" style="grid-template-columns:1fr 1fr;">' +
+      '<div class="option-card '+(state.modalite==="presentiel"?"selected":"")+'" onclick="sel(\'modalite\',\'presentiel\')">' +
+        '<span class="emoji">🏢</span><span class="label">Présentiel</span><span class="sub">En entreprise ou espace dédié</span></div>' +
+      '<div class="option-card '+(state.modalite==="distanciel"?"selected":"")+'" onclick="sel(\'modalite\',\'distanciel\')">' +
+        '<span class="emoji">💻</span><span class="label">Distanciel</span><span class="sub">Zoom, Teams, Google Meet</span></div>' +
+    '</div></div>' +
+    nav() + '</div>';
+  area.innerHTML = html;
+}
+
+function renderDates(area) {
+  var extraField = isPro() ?
+    '<div class="field-group"><div class="field-label">Société</div><input type="text" value="'+esc(state.societe)+'" oninput="state.societe=this.value" placeholder="Nom de l\u2019entreprise"></div>' :
+    '<div class="field-group"><div class="field-label">Date souhaitée</div><input type="text" value="'+esc(state.datesouhait)+'" oninput="state.datesouhait=this.value" placeholder="Septembre 2025…"></div>';
+
+  area.innerHTML = '<div class="card">' +
+    '<div class="card-title">Vos coordonnées</div>' +
+    '<div class="card-subtitle">Pour recevoir votre devis personnalisé</div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">' +
+      '<div class="field-group"><div class="field-label">Nom complet *</div><input type="text" value="'+esc(state.nom)+'" oninput="state.nom=this.value;checkNav();" placeholder="Jean Dupont"></div>' +
+      '<div class="field-group"><div class="field-label">Email *</div><input type="email" value="'+esc(state.email)+'" oninput="state.email=this.value;checkNav();" placeholder="jean@entreprise.fr"></div>' +
+      '<div class="field-group"><div class="field-label">Téléphone</div><input type="tel" value="'+esc(state.tel)+'" oninput="state.tel=this.value" placeholder="06 00 00 00 00"></div>' +
+      extraField +
+    '</div>' +
+    '<div class="field-group"><div class="field-label">Message / précisions</div>' +
+      '<textarea style="width:100%;padding:0.75rem 1rem;border:2px solid var(--border);border-radius:var(--radius-sm);font-family:\'DM Sans\',sans-serif;font-size:0.95rem;min-height:80px;resize:vertical;background:var(--card);" oninput="state.message=this.value">'+esc(state.message)+'</textarea></div>' +
+    nav() + '</div>';
+}
+
+function esc(s) { return s.replace(/"/g, "&quot;").replace(/</g, "&lt;"); }
+
+function renderRecapFinal(area) {
+  var p = parcoursObj();
+  var tx = isPro() ? "HT" : "TTC";
+  var total = calcTotal();
+  var allMods = Object.values(MODULES).flat();
+  var selectedMods = state.modules.map(function(mid) { return allMods.find(function(x){return x.id===mid;}); }).filter(Boolean);
+  var discount = getModuleDiscount();
+  var modulesRaw = calcModulesRaw();
+  var immObj = IMMERSIONS.find(function(i){return i.value===state.immersion;});
+  var modLabel = state.modalite === "presentiel" ? "Présentiel" : state.modalite === "distanciel" ? "Distanciel" : "—";
+  var parcoursPrix = 0;
+  if (p) parcoursPrix = state.formule === "groupe" ? p.prixGroupe * state.participants : p.prixIndiv;
+
+  var html = '<div class="card">' +
+    '<div class="card-title">Récapitulatif de votre devis</div>' +
+    '<div class="card-subtitle">Vérifiez les informations avant de soumettre</div>' +
+    '<div class="summary-grid">' +
+      '<div class="summary-item"><div class="slabel">Profil</div><div class="svalue">'+(isPro()?"Entreprise":"Particulier")+'</div></div>' +
+      '<div class="summary-item"><div class="slabel">Langue</div><div class="svalue">'+langLabel()+'</div></div>' +
+      '<div class="summary-item"><div class="slabel">Parcours</div><div class="svalue">'+(p?p.label+" · "+p.duree+"h":"—")+'</div></div>' +
+      '<div class="summary-item"><div class="slabel">Formule</div><div class="svalue">'+(state.formule==="groupe"?"Groupe ("+state.participants+" pers.)":"Individuelle")+'</div></div>' +
+      '<div class="summary-item"><div class="slabel">Modalité</div><div class="svalue">'+modLabel+'</div></div>' +
+      '<div class="summary-item"><div class="slabel">Contact</div><div class="svalue">'+(state.nom||"—")+'<br><span style="font-size:0.8rem;color:var(--muted);">'+(state.email||"")+'</span></div></div>' +
+    '</div>';
+
+  // Parcours price
+  html += '<div style="background:var(--paper);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.6rem;">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+      '<div><strong>Parcours '+(p?p.label:"—")+'</strong> · '+(p?p.duree:"—")+'h'+(state.formule==="groupe"?" × "+state.participants+" pers.":"")+'</div>' +
+      '<div style="font-weight:700;color:var(--accent);">'+parcoursPrix.toLocaleString("fr-FR")+' €</div>' +
+    '</div></div>';
+
+  // Modules
+  if (selectedMods.length > 0) {
+    html += '<div style="background:var(--paper);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.6rem;">' +
+      '<div style="font-weight:700;margin-bottom:0.5rem;">Modules d\u2019expertise ('+selectedMods.length+')'+(discount>0?' <span style="background:var(--warm);color:white;padding:0.1rem 0.4rem;border-radius:50px;font-size:0.7rem;">-'+Math.round(discount*100)+'%</span>':"")+'</div>';
+    selectedMods.forEach(function(m) {
+      html += '<div style="display:flex;justify-content:space-between;font-size:0.85rem;padding:0.2rem 0;color:var(--muted);">' +
+        '<span>'+m.label+'</span><span style="color:var(--ink);">'+m.prix+' €</span></div>';
+    });
+    if (discount > 0) {
+      html += '<div style="display:flex;justify-content:space-between;font-size:0.85rem;padding:0.3rem 0 0;margin-top:0.3rem;border-top:1px dashed var(--border);color:var(--warm);font-weight:600;">' +
+        '<span>Remise -'+Math.round(discount*100)+'%</span><span>-'+Math.round(modulesRaw*discount).toLocaleString("fr-FR")+' €</span></div>';
+    }
+    html += '</div>';
+  }
+
+  // Immersion
+  if (immObj && immObj.prix > 0) {
+    html += '<div style="background:var(--paper);border-radius:var(--radius-sm);padding:1rem;margin-bottom:0.6rem;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;">' +
+        '<div><strong>'+immObj.label+'</strong></div>' +
+        '<div style="font-weight:700;color:var(--accent);">'+immObj.prix+' €</div></div></div>';
+  }
+
+  // Total
+  html += '<div style="background:var(--accent-bg);border-radius:var(--radius-sm);padding:1.2rem;display:flex;justify-content:space-between;align-items:baseline;margin-top:1rem;">' +
+    '<div style="font-weight:700;font-size:1.1rem;">Total estimé</div>' +
+    '<div style="font-family:\'Playfair Display\',serif;font-size:2rem;font-weight:800;color:var(--accent);">'+total.toLocaleString("fr-FR")+' € <span style="font-size:0.85rem;font-weight:400;">'+tx+'</span></div></div>';
+
+  html += '<div class="action-row" style="margin-top:1.5rem;">' +
+    '<button class="btn btn-secondary" onclick="goBack()">← Modifier</button>' +
+    '<button class="btn btn-warm" onclick="downloadPDF()">📄 Télécharger en PDF</button>' +
+    '<button class="btn btn-primary" onclick="submitDevis()" id="submitBtn">🚀 Soumettre mon devis</button>' +
+  '</div><div id="submitMsg"></div></div>';
+  area.innerHTML = html;
+}
+
+// ═══ SIDEBAR RECAP ═══
+function renderRecap() {
+  var lines = document.getElementById("recapLines");
+  var totalEl = document.getElementById("recapTotal");
+  var priceEl = document.getElementById("totalPrice");
+  var tx = isPro() ? "HT" : "TTC";
+  var html = "";
+
+  if (state.profil) html += rline("Profil", isPro()?"Entreprise":"Particulier");
+  if (state.langue) html += rline("Langue", langLabel());
+  if (state.parcours) { var p = parcoursObj(); html += rline("Parcours", p.label+" · "+p.duree+"h"); }
+  if (state.formule) html += rline("Formule", state.formule==="groupe"?"Groupe ("+state.participants+")":"Individuelle");
+  if (state.modules.length > 0) {
+    var d = getModuleDiscount();
+    html += rline("Modules", state.modules.length+" sélectionné"+(state.modules.length>1?"s":"")+(d>0?" (-"+Math.round(d*100)+"%)":""));
+  }
+  if (state.immersion !== "none") { var im = IMMERSIONS.find(function(i){return i.value===state.immersion;}); html += rline("Immersion", im.label); }
+  if (state.modalite) html += rline("Modalité", state.modalite==="presentiel"?"Présentiel":"Distanciel");
+
+  lines.innerHTML = html;
+  var total = calcTotal();
+  if (total > 0) { totalEl.style.display = "flex"; priceEl.textContent = total.toLocaleString("fr-FR") + " € " + tx; }
+  else { totalEl.style.display = "none"; }
+}
+
+function rline(label, value) {
+  return '<div class="recap-line"><span class="rlabel">'+label+'</span><span class="rvalue">'+value+'</span></div>';
+}
+
+// ═══ PDF ═══
+function downloadPDF() {
+  var p = parcoursObj();
+  var tx = isPro() ? "HT" : "TTC";
+  var total = calcTotal();
+  var allMods = Object.values(MODULES).flat();
+  var selectedMods = state.modules.map(function(mid){return allMods.find(function(x){return x.id===mid;});}).filter(Boolean);
+  var discount = getModuleDiscount();
+  var immObj = IMMERSIONS.find(function(i){return i.value===state.immersion;});
+  var now = new Date();
+  var validity = new Date(now.getTime() + 30*24*60*60*1000);
+  var parcoursPrix = 0;
+  if (p) parcoursPrix = state.formule === "groupe" ? p.prixGroupe * state.participants : p.prixIndiv;
+
+  var el = document.getElementById("pdf-content");
+  var h = '<div class="pdf-header"><div><div class="pdf-logo">Voce<span>lia</span></div><div style="font-size:0.85rem;color:var(--muted);">Formation linguistique professionnelle</div></div>' +
+    '<div class="pdf-date">Devis du '+now.toLocaleDateString("fr-FR")+'<br>Réf. VCL-'+Date.now().toString(36).toUpperCase()+'</div></div>' +
+    '<h2>Devis personnalisé — '+langLabel()+'</h2>' +
+    '<table><tr><th>Élément</th><th>Détail</th></tr>' +
+    '<tr><td>Profil</td><td>'+(isPro()?"Entreprise":"Particulier")+'</td></tr>' +
+    '<tr><td>Langue</td><td>'+langLabel()+'</td></tr>' +
+    '<tr><td>Parcours</td><td>'+(p?p.label+" — "+p.niveau+" — "+p.duree+"h":"—")+'</td></tr>' +
+    '<tr><td>Formule</td><td>'+(state.formule==="groupe"?"Groupe ("+state.participants+" participants)":"Individuelle")+'</td></tr>' +
+    '<tr><td>Modalité</td><td>'+(state.modalite==="presentiel"?"Présentiel":"Distanciel")+'</td></tr>' +
+    '<tr><td>Prix parcours</td><td>'+parcoursPrix.toLocaleString("fr-FR")+' €</td></tr>';
+
+  if (selectedMods.length > 0) {
+    h += '<tr><td>Modules ('+selectedMods.length+')'+(discount>0?" -"+Math.round(discount*100)+"%":"")+'</td><td>'+Math.round(calcModulesRaw()*(1-discount)).toLocaleString("fr-FR")+' €</td></tr>';
+  }
+  if (immObj && immObj.prix > 0) {
+    h += '<tr><td>'+immObj.label+'</td><td>'+immObj.prix+' €</td></tr>';
+  }
+
+  h += '</table><div class="pdf-total">Total estimé : '+total.toLocaleString("fr-FR")+' € '+tx+'</div>' +
+    '<div class="pdf-footer">Ce devis est indicatif et valable 30 jours (jusqu\u2019au '+validity.toLocaleDateString("fr-FR")+'). Le tarif définitif sera confirmé après étude de votre dossier.<br>' +
+    '<strong>Vocelia — Formation linguistique professionnelle</strong><br>' +
+    'vocelia.formation@gmail.com · 06 84 15 97 01 · Ollioules, Région PACA<br>' +
+    'Certification Qualiopi en cours d\u2019obtention. Formations exonérées de TVA (art. 261-4-4° CGI).</div>';
+
+  el.innerHTML = h;
+  html2pdf().set({ margin:[10,10,10,10], filename:"Devis_Vocelia_"+langLabel()+".pdf", html2canvas:{scale:2,useCORS:true}, jsPDF:{format:"a4"} }).from(el).save();
+}
+
+// ═══ SUBMIT ═══
+async function submitDevis() {
+  var btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.textContent = "⏳ Envoi en cours…";
+
+  var p = parcoursObj();
+  var tx = isPro() ? "HT" : "TTC";
+  var allMods = Object.values(MODULES).flat();
+  var selectedMods = state.modules.map(function(mid){return allMods.find(function(x){return x.id===mid;});}).filter(Boolean);
+  var immObj = IMMERSIONS.find(function(i){return i.value===state.immersion;});
+
+  var payload = {
+    profil: state.profil, langue: langLabel(),
+    parcours: p ? p.label+" ("+p.niveau+", "+p.duree+"h)" : "—",
+    formule: state.formule==="groupe"?"Groupe ("+state.participants+")":"Individuelle",
+    modalite: state.modalite,
+    modules: selectedMods.map(function(m){return m.label;}).join(", ") || "Aucun",
+    immersion: immObj ? immObj.label : "Aucune",
+    total: calcTotal().toLocaleString("fr-FR")+" € "+tx,
+    nom: state.nom, email: state.email, tel: state.tel, societe: state.societe, message: state.message
+  };
+
+  try {
+    var resp = await fetch("/api/devis", { method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload) });
+    if (resp.ok) {
+      document.getElementById("submitMsg").innerHTML = '<div style="margin-top:1.5rem;padding:1.2rem;background:var(--accent-bg);border-radius:var(--radius-sm);text-align:center;">' +
+        '<div style="font-size:1.5rem;margin-bottom:0.5rem;">✅</div>' +
+        '<div style="font-weight:700;font-size:1.05rem;color:var(--accent);">Devis soumis avec succès !</div>' +
+        '<div style="font-size:0.88rem;color:var(--muted);margin-top:0.3rem;">Vous recevrez un email de confirmation sous 48h.</div></div>';
+      btn.style.display = "none";
+    } else { throw new Error("err"); }
+  } catch(e) {
+    showToast("⚠️ Le devis a été généré. Téléchargez le PDF en attendant la mise en ligne du serveur.");
+    btn.textContent = "🚀 Soumettre mon devis";
+    btn.disabled = false;
+  }
+}
+
+function showToast(msg) {
+  var t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  setTimeout(function(){ t.classList.remove("show"); }, 4000);
+}
+
+// ═══ INIT ═══
+render();
+</script>
+</body>
+</html>

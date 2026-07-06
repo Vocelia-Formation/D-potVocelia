@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocelia — Formation linguistique pour entreprises</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ══════════════════════════════════════
+   VARIABLES — Palette Vocelia — Teal & Coral
+   ══════════════════════════════════════ */
+:root {
+  --ink: #1C1F2E;
+  --paper: #F6F1E9;
+  --cream: #FFFDF8;
+  --card: #FFFDF8;
+  --accent: #0B7A75;
+  --accent-light: #12B5AE;
+  --accent-bg: #E0F0EF;
+  --red: #E8603C;
+  --red-light: #F07854;
+  --red-bg: #FDECE6;
+  --yellow: #E8603C;
+  --yellow-bg: #FDECE6;
+  --green: #0B7A75;
+  --green-light: #12B5AE;
+  --green-bg: #E0F0EF;
+  --muted: #6B7280;
+  --border: #D8CEBC;
+  --shadow: 0 2px 24px rgba(28,31,46,0.06);
+  --shadow-lg: 0 12px 48px rgba(28,31,46,0.10);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --max-w: 1140px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.7;
+  overflow-x: hidden;
+  position: relative;
+}
+#bgCanvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── UTILITIES ── */
+.container { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
+.section { padding: 5rem 0; }
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 0.6rem;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+}
+.section-subtitle {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 600px;
+  margin-bottom: 3rem;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.reveal {
+  opacity: 1;
+  transform: translateY(0);
+  transition: all 0.7s cubic-bezier(.4,0,.2,1);
+}
+.reveal.hidden {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ══════════════════════════════════════
+   NAVIGATION
+   ══════════════════════════════════════ */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: rgba(253,248,240,0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  transition: box-shadow 0.3s;
+}
+.nav.scrolled { box-shadow: var(--shadow); }
+.nav-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 800;
+  text-decoration: none;
+  color: var(--ink);
+}
+.nav-logo span { color: var(--red); }
+.nav-parent {
+  font-size: 0.78rem;
+  color: var(--muted);
+  margin-left: 1rem;
+  padding-left: 1rem;
+  border-left: 1px solid var(--border);
+}
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  list-style: none;
+  flex-shrink: 0;
+}
+.nav-links a {
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.25s;
+  white-space: nowrap;
+}
+.nav-links a:hover { color: var(--accent); }
+.nav-cta {
+  background: var(--accent) !important;
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600 !important;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.25s, transform 0.25s !important;
+}
+.nav-cta:hover { background: var(--accent-light) !important; transform: translateY(-1px); }
+
+/* Mobile nav */
+.nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+.nav-toggle span { display: block; width: 22px; height: 2px; background: var(--ink); margin: 5px 0; transition: 0.3s; }
+@media (max-width: 768px) {
+  .nav-toggle { display: block; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: var(--paper);
+    flex-direction: column;
+    padding: 1.5rem 2rem;
+    gap: 1rem;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+  .nav-links.open { display: flex; }
+  .nav-parent { display: none; }
+}
+
+/* ══════════════════════════════════════
+   HERO
+   ══════════════════════════════════════ */
+.hero {
+  padding: 10rem 0 6rem;
+  position: relative;
+  overflow: hidden;
+  background: var(--ink);
+  color: white;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  right: -100px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 65%);
+  opacity: 0.12;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: -150px;
+  left: -80px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, var(--yellow) 0%, transparent 65%);
+  opacity: 0.1;
+}
+/* Miró decorative dots */
+.hero-dots {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 650px;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50px;
+  padding: 0.4rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  backdrop-filter: blur(8px);
+  animation: fadeUp 0.6s ease both;
+}
+.hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 3.2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 1.2rem;
+  animation: fadeUp 0.7s ease 0.1s both;
+}
+.hero h1 .highlight { color: var(--green-light); }
+.hero p {
+  font-size: 1.15rem;
+  opacity: 0.8;
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  animation: fadeUp 0.7s ease 0.2s both;
+}
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  animation: fadeUp 0.7s ease 0.3s both;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.9rem 1.8rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+.btn-primary {
+  background: var(--green);
+  color: white;
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(30,132,73,0.35); background: var(--green-light); }
+.btn-outline {
+  background: transparent;
+  color: white;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+.btn-outline:hover { border-color: white; background: rgba(255,255,255,0.05); }
+.btn-accent {
+  background: var(--accent);
+  color: white;
+}
+.btn-accent:hover { background: var(--accent-light); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(11,122,117,0.3); }
+.btn-large {
+  padding: 1.1rem 2.4rem;
+  font-size: 1.05rem;
+  border-radius: var(--radius);
+}
+
+/* ══════════════════════════════════════
+   QUI SOMMES-NOUS
+   ══════════════════════════════════════ */
+#about .section-label { color: var(--accent); }
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+}
+@media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; } }
+.about-text p {
+  color: var(--muted);
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+.about-text p strong { color: var(--ink); }
+.about-values {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.value-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 1.3rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.value-card:hover { transform: translateY(-4px); box-shadow: var(--shadow); }
+.value-card .v-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
+.value-card .v-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.2rem; }
+.value-card .v-text { font-size: 0.8rem; color: var(--muted); }
+
+/* ══════════════════════════════════════
+   LANGUES
+   ══════════════════════════════════════ */
+#langues { background: var(--cream); }
+#langues .section-label { color: var(--red); }
+.langues-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+@media (max-width: 768px) { .langues-grid { grid-template-columns: 1fr 1fr; } }
+.langue-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2rem 1.5rem;
+  text-align: center;
+  border: 1px solid var(--border);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.langue-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+.langue-card:nth-child(1)::before { background: var(--accent); }
+.langue-card:nth-child(2)::before { background: var(--red); }
+.langue-card:nth-child(3)::before { background: var(--yellow); }
+.langue-card:nth-child(4)::before { background: var(--green); }
+.langue-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg); }
+.langue-card .flag { font-size: 2.8rem; margin-bottom: 0.8rem; }
+.langue-card .l-name { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.15rem; margin-bottom: 0.3rem; }
+.langue-card .l-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+
+/* ══════════════════════════════════════
+   COMMENT ÇA MARCHE
+   ══════════════════════════════════════ */
+#process .section-label { color: var(--green); }
+.process-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  position: relative;
+}
+@media (max-width: 768px) { .process-steps { grid-template-columns: 1fr; } }
+.process-step {
+  text-align: center;
+  position: relative;
+}
+.step-num {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0 auto 1rem;
+  color: white;
+}
+.process-step:nth-child(1) .step-num { background: var(--accent); }
+.process-step:nth-child(2) .step-num { background: var(--red); }
+.process-step:nth-child(3) .step-num { background: var(--yellow); color: var(--ink); }
+.process-step:nth-child(4) .step-num { background: var(--green); }
+.process-step h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+.process-step p {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════
+   FINANCEMENTS
+   ══════════════════════════════════════ */
+#financement { background: linear-gradient(180deg, var(--cream) 0%, #eee8d9 100%); }
+#financement .section-label { color: var(--accent); font-size: 0.85rem; }
+#financement .section-title { font-size: 2.6rem; }
+.finance-intro {
+  color: var(--muted);
+  max-width: 700px;
+  margin-bottom: 2rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+.finance-callout {
+  background: var(--accent);
+  color: white;
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  box-shadow: 0 4px 20px rgba(11,122,117,0.2);
+}
+.finance-callout .fc-icon {
+  font-size: 2.5rem;
+  flex-shrink: 0;
+}
+.finance-callout strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 0.2rem;
+}
+.finance-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+@media (max-width: 768px) { .finance-grid { grid-template-columns: 1fr; } }
+.finance-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  border: 1px solid var(--border);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.finance-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.finance-card .f-badge {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 50px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 1rem;
+}
+.finance-card:nth-child(1) .f-badge { background: var(--accent-bg); color: var(--accent); }
+.finance-card:nth-child(2) .f-badge { background: var(--red-bg); color: var(--red); }
+.finance-card:nth-child(3) .f-badge { background: var(--yellow-bg); color: var(--warm); }
+.finance-card:nth-child(4) .f-badge { background: var(--green-bg); color: var(--green); }
+.finance-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+.finance-card .f-who {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 0.8rem;
+}
+.finance-card p {
+  font-size: 0.9rem;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+  line-height: 1.6;
+}
+.finance-card .f-highlight {
+  background: var(--paper);
+  border-radius: var(--radius-sm);
+  padding: 0.8rem 1rem;
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  border-left: 3px solid;
+}
+.finance-card:nth-child(1) .f-highlight { border-color: var(--accent); }
+.finance-card:nth-child(2) .f-highlight { border-color: var(--red); }
+.finance-card:nth-child(3) .f-highlight { border-color: var(--yellow); }
+.finance-card:nth-child(4) .f-highlight { border-color: var(--green); }
+.finance-card .f-steps {
+  margin-top: 1rem;
+  padding: 0;
+  list-style: none;
+  counter-reset: fstep;
+}
+.finance-card .f-steps li {
+  counter-increment: fstep;
+  font-size: 0.85rem;
+  color: var(--ink);
+  padding: 0.4rem 0;
+  padding-left: 2rem;
+  position: relative;
+  border-bottom: 1px solid var(--border);
+}
+.finance-card .f-steps li:last-child { border-bottom: none; }
+.finance-card .f-steps li::before {
+  content: counter(fstep);
+  position: absolute;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--paper);
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 20px;
+  color: var(--muted);
+}
+
+/* Full-width FNE card */
+.finance-full {
+  grid-column: 1 / -1;
+}
+
+/* ══════════════════════════════════════
+   QUALIOPI SECTION — Premium highlight
+   ══════════════════════════════════════ */
+.qualiopi-banner {
+  background: var(--ink);
+  color: white;
+  padding: 5rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.qualiopi-banner::before {
+  content: '';
+  position: absolute;
+  top: -100px;
+  left: -50px;
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, var(--yellow) 0%, transparent 65%);
+  opacity: 0.08;
+}
+.qualiopi-banner::after {
+  content: '';
+  position: absolute;
+  bottom: -80px;
+  right: -30px;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 65%);
+  opacity: 0.08;
+}
+.qualiopi-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.qualiopi-shield {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--green), var(--green-light));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  margin: 0 auto 1.5rem;
+  box-shadow: 0 4px 24px rgba(30,132,73,0.3);
+}
+.qualiopi-banner h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+.qualiopi-banner h3 span {
+  color: var(--green-light);
+}
+.qualiopi-banner p {
+  font-size: 1.05rem;
+  opacity: 0.8;
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+}
+.qualiopi-badges {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+.qualiopi-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 50px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  backdrop-filter: blur(8px);
+}
+.qualiopi-tag .qt-icon {
+  font-size: 1rem;
+}
+
+/* ══════════════════════════════════════
+   CTA SECTION
+   ══════════════════════════════════════ */
+.cta-section {
+  padding: 6rem 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, var(--accent-bg) 0%, transparent 70%);
+  opacity: 0.5;
+}
+.cta-content {
+  position: relative;
+  z-index: 1;
+}
+.cta-content h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin-bottom: 0.8rem;
+}
+.cta-content p {
+  color: var(--muted);
+  font-size: 1.05rem;
+  margin-bottom: 2rem;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+/* Miró dots decoration in CTA */
+.cta-dots {
+  position: absolute;
+  pointer-events: none;
+}
+.cta-dots .d { position: absolute; border-radius: 50%; }
+.cta-dots .d1 { width: 60px; height: 60px; background: var(--red); opacity: 0.12; top: 20%; left: 5%; }
+.cta-dots .d2 { width: 35px; height: 35px; background: var(--yellow); opacity: 0.2; top: 30%; right: 10%; }
+.cta-dots .d3 { width: 25px; height: 25px; background: var(--accent); opacity: 0.15; bottom: 25%; left: 15%; }
+.cta-dots .d4 { width: 45px; height: 45px; background: var(--green); opacity: 0.1; bottom: 15%; right: 8%; }
+
+/* ══════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════ */
+.footer {
+  background: var(--ink);
+  color: rgba(255,255,255,0.6);
+  padding: 3rem 0;
+}
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: white;
+}
+.footer-logo span { color: var(--red); }
+.footer-sub { font-size: 0.8rem; margin-top: 0.2rem; }
+.footer-right { font-size: 0.8rem; text-align: right; }
+.footer-right a { color: var(--red); text-decoration: none; }
+.footer-right a:hover { text-decoration: underline; }
+
+/* ══════════════════════════════════════
+   TESTIMONIALS
+   ══════════════════════════════════════ */
+#temoignages .section-label { color: var(--red); }
+.temoignages-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+@media (max-width: 768px) { .temoignages-grid { grid-template-columns: 1fr; } }
+.temoin-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2rem;
+  border: 1px solid var(--border);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative;
+}
+.temoin-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+.temoin-card::before {
+  content: '"';
+  font-family: 'Playfair Display', serif;
+  font-size: 4rem;
+  color: var(--red);
+  opacity: 0.25;
+  position: absolute;
+  top: 10px;
+  left: 18px;
+  line-height: 1;
+}
+.temoin-text {
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-bottom: 1.2rem;
+  position: relative;
+  z-index: 1;
+}
+.temoin-author {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+.temoin-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+}
+.temoin-card:nth-child(1) .temoin-avatar { background: var(--accent); }
+.temoin-card:nth-child(2) .temoin-avatar { background: var(--red); }
+.temoin-card:nth-child(3) .temoin-avatar { background: var(--green); }
+.temoin-name { font-weight: 700; font-size: 0.88rem; }
+.temoin-role { font-size: 0.78rem; color: var(--muted); }
+.temoin-stars { color: var(--yellow); font-size: 0.85rem; letter-spacing: 2px; margin-bottom: 0.8rem; }
+
+/* ══════════════════════════════════════
+   TEST NIVEAU BANNER
+   ══════════════════════════════════════ */
+.test-banner {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: white;
+  padding: 3rem 0;
+  text-align: center;
+}
+.test-banner-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.test-banner h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.6rem;
+}
+.test-banner p {
+  font-size: 0.95rem;
+  opacity: 0.85;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+.btn-test {
+  background: white;
+  color: var(--accent);
+  padding: 0.8rem 2rem;
+  border-radius: var(--radius-sm);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.btn-test:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
+
+/* ══════════════════════════════════════
+   FINANCING SIMULATOR
+   ══════════════════════════════════════ */
+.simulator {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 2.5rem;
+  border: 2px solid var(--accent);
+  margin-top: 2.5rem;
+  box-shadow: var(--shadow-lg);
+}
+.simulator h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+}
+.simulator .sim-subtitle {
+  font-size: 0.88rem;
+  color: var(--muted);
+  margin-bottom: 1.5rem;
+}
+.sim-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+@media (max-width: 600px) { .sim-row { grid-template-columns: 1fr; } }
+.sim-field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  color: var(--ink);
+}
+.sim-field select, .sim-field input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.9rem;
+  background: var(--paper);
+  transition: border-color 0.25s;
+}
+.sim-field select:focus, .sim-field input:focus { border-color: var(--accent); outline: none; }
+.sim-result {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(135deg, var(--accent-bg), #eef4fb);
+  display: none;
+}
+.sim-result.active { display: block; }
+.sim-result-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  text-align: center;
+}
+@media (max-width: 600px) { .sim-result-grid { grid-template-columns: 1fr; } }
+.sim-result-item .sri-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+.sim-result-item .sri-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--accent);
+}
+.sim-result-item .sri-value.green { color: var(--green); }
+.sim-result-note {
+  margin-top: 1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* ══════════════════════════════════════
+   CONTACT SECTION
+   ══════════════════════════════════════ */
+.contact-section {
+  background: var(--cream);
+  padding: 4rem 0;
+}
+.contact-inner {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}
+.contact-inner h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 0.6rem;
+}
+.contact-inner p {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.7;
+}
+.contact-email {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--card);
+  border: 2px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 1rem 2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  transition: all 0.25s;
+}
+.contact-email:hover {
+  background: var(--accent);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(11,122,117,0.2);
+}
+.contact-details {
+  margin-top: 1.2rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ GLOBAL BACKGROUND ANIMATION ═══ -->
+<canvas id="bgCanvas"></canvas>
+
+<!-- ═══ NAVIGATION ═══ -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <div style="display:flex;align-items:center;">
+      <a href="#" class="nav-logo">Voce<span>lia</span></a>
+      <span class="nav-parent">par Nathalie Avédissian Traduction</span>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">Notre approche</a></li>
+      <li><a href="#langues">Langues</a></li>
+      <li><a href="vocelia-formateurs.html">Formateurs</a></li>
+      <li><a href="#financement">Financement</a></li>
+      <li><a href="vocelia-test.html" style="color:var(--accent);">Test de niveau</a></li>
+      <li><a href="vocelia-devis.html" class="nav-cta">Devis et commande →</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- ═══ HERO ═══ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">🎓 Organisme de formation linguistique — Entreprises et Particuliers</div>
+      <a href="#financement" class="hero-badge" style="margin-left:0.5rem;background:rgba(11,122,117,0.15);border-color:rgba(11,122,117,0.25);text-decoration:none;color:white;cursor:pointer;">🏅 Certification Qualiopi en cours — Financement CPF · OPCO</a>
+      <h1>Les mots justes.<br>Au bon moment.<br>Dans votre <span class="highlight">réalité professionnelle.</span></h1>
+      <p>Anglais · Espagnol · Français professionnel. Des formations conçues pour les professionnels, les entreprises et les institutions. Parcours sur mesure, certifications reconnues (TOEIC, LILATE, DELF). Devis personnalisé sous 48h.</p>
+      <div class="hero-actions">
+        <a href="vocelia-devis.html" class="btn btn-primary btn-large">Devis personnalisé sous 48h →</a>
+        <a href="#financement" class="btn btn-outline">Découvrir les financements</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ QUI SOMMES-NOUS ═══ -->
+<section class="section" id="about">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-text reveal">
+        <div class="section-label">Notre approche</div>
+        <div class="section-title">Une formation qui part de votre réalité</div>
+        <p><strong>Vocelia</strong> est une branche de <strong>Nathalie Avédissian Traduction</strong> dédiée à la formation linguistique professionnalisante. Que vous soyez une entreprise cherchant à monter en compétences vos équipes, ou un particulier préparant une certification ou un projet de carrière, nous construisons un programme adapté à votre réalité.</p>
+        <p><strong>Pour les entreprises</strong> : des formations orientées métier — vocabulaire sectoriel, situations professionnelles concrètes, préparation aux certifications reconnues (TOEIC, Linguaskill, LILATE). Financements OPCO et CPF facilités.</p>
+        <p><strong>Pour les particuliers</strong> : des cours à votre rythme pour préparer une certification reconnue (TOEIC, LILATE, DELF), une reconversion, un voyage ou simplement le plaisir d'apprendre. En individuel ou en duo, en visio ou à domicile.</p>
+      </div>
+      <div class="about-values reveal" style="transition-delay: 0.15s;">
+        <div class="value-card">
+          <div class="v-icon">🎯</div>
+          <div class="v-title">Sur mesure</div>
+          <div class="v-text">Chaque programme est adapté à votre profil, vos objectifs et votre rythme de vie.</div>
+        </div>
+        <div class="value-card">
+          <div class="v-icon">📊</div>
+          <div class="v-title">Résultats mesurables</div>
+          <div class="v-text">Évaluation initiale, suivi de progression et bilan final pour des résultats concrets.</div>
+        </div>
+        <div class="value-card">
+          <div class="v-icon">🤝</div>
+          <div class="v-title">Flexibilité totale</div>
+          <div class="v-text">À domicile, sur site, en salle, par téléphone ou en visio — on s'adapte à vous.</div>
+        </div>
+        <div class="value-card">
+          <div class="v-icon">💰</div>
+          <div class="v-title">Financement accompagné</div>
+          <div class="v-text">Entreprises : nous vous guidons dans vos démarches OPCO et CPF. Particuliers : tarifs accessibles.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ LANGUES ═══ -->
+<section class="section" id="langues">
+  <div class="container">
+    <div class="section-label reveal">Nos formations</div>
+    <div class="section-title reveal">3 langues, des dizaines de contextes</div>
+    <div class="section-subtitle reveal">Anglais, Espagnol, Français professionnel — chaque parcours est calibré selon le CECRL (A1 → C2).</div>
+    <div class="langues-grid">
+      <div class="langue-card reveal">
+        <div class="flag">🇫🇷</div>
+        <div class="l-name">FLE</div>
+        <div class="l-desc">Français professionnel pour les non-francophones. Intégration professionnelle, communication métier, préparation au DELF.</div>
+      </div>
+      <div class="langue-card reveal" style="transition-delay: 0.1s;">
+        <div class="flag">🇬🇧</div>
+        <div class="l-name">Anglais</div>
+        <div class="l-desc">De la conversation courante à l'anglais des affaires. Préparation TOEIC, LILATE, échanges professionnels internationaux.</div>
+      </div>
+      <div class="langue-card reveal" style="transition-delay: 0.2s;">
+        <div class="flag">🇪🇸</div>
+        <div class="l-name">Espagnol</div>
+        <div class="l-desc">De la conversation quotidienne à l'espagnol des affaires. Préparation DELE, voyages, échanges professionnels.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TÉMOIGNAGES ═══ -->
+<section class="section" id="temoignages">
+  <div class="container">
+    <div class="section-label reveal">Ils nous font confiance</div>
+    <div class="section-title reveal">Ce que nos clients disent de nous</div>
+    <div class="section-subtitle reveal">Des résultats concrets, une satisfaction mesurable.</div>
+    <div class="temoignages-grid">
+      <div class="temoin-card reveal">
+        <div class="temoin-stars">★★★★★</div>
+        <div class="temoin-text">Formation en anglais des affaires pour 8 de nos commerciaux. En 3 mois, l'aisance à l'oral a complètement changé. Le programme était parfaitement adapté à notre secteur et les formateurs très pros.</div>
+        <div class="temoin-author">
+          <div class="temoin-avatar">SL</div>
+          <div>
+            <div class="temoin-name">Sophie Lemaire</div>
+            <div class="temoin-role">DRH — LogiTrans SAS</div>
+          </div>
+        </div>
+      </div>
+      <div class="temoin-card reveal" style="transition-delay: 0.1s;">
+        <div class="temoin-stars">★★★★★</div>
+        <div class="temoin-text">J'ai suivi une formation d'espagnol en individuel pour préparer ma reconversion. Les cours par visio étaient très flexibles et le formateur s'est vraiment adapté à mes objectifs. Je recommande à 100%.</div>
+        <div class="temoin-author">
+          <div class="temoin-avatar">KM</div>
+          <div>
+            <div class="temoin-name">Karim Mehdaoui</div>
+            <div class="temoin-role">Particulier — Formation espagnol</div>
+          </div>
+        </div>
+      </div>
+      <div class="temoin-card reveal" style="transition-delay: 0.2s;">
+        <div class="temoin-stars">★★★★★</div>
+        <div class="temoin-text">Nos collaborateurs allophones ont suivi un parcours FLE intensif. L'accompagnement dans les démarches OPCO a été un vrai plus — tout a été pris en charge. Résultats visibles dès les premières semaines.</div>
+        <div class="temoin-author">
+          <div class="temoin-avatar">CB</div>
+          <div>
+            <div class="temoin-name">Claire Besson</div>
+            <div class="temoin-role">Responsable Formation — Hélio Industrie</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ TEST DE NIVEAU BANNER ═══ -->
+<div class="test-banner">
+  <div class="container">
+    <div class="test-banner-inner">
+      <h3>📝 Testez votre niveau gratuitement</h3>
+      <p>Évaluez votre niveau en anglais, espagnol ou FLE en quelques minutes grâce à notre test en ligne. Résultat immédiat selon le CECRL (A1 → C1).</p>
+      <a href="vocelia-test.html" class="btn-test">Passer le test gratuit →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ COMMENT ÇA MARCHE ═══ -->
+<section class="section" id="process">
+  <div class="container">
+    <div class="section-label reveal">Comment ça marche</div>
+    <div class="section-title reveal">De l'évaluation au certificat,<br>en 4 étapes simples</div>
+    <div class="section-subtitle reveal">Un processus clair pour des résultats concrets.</div>
+    <div class="process-steps">
+      <div class="process-step reveal">
+        <div class="step-num">1</div>
+        <h3>Analyse des besoins</h3>
+        <p>Nous évaluons votre niveau et identifions ensemble vos objectifs, qu'ils soient professionnels ou personnels.</p>
+      </div>
+      <div class="process-step reveal" style="transition-delay: 0.1s;">
+        <div class="step-num">2</div>
+        <h3>Devis et commande</h3>
+        <p>Configurez votre formation en ligne, obtenez votre devis instantanément et commandez avec paiement sécurisé.</p>
+      </div>
+      <div class="process-step reveal" style="transition-delay: 0.2s;">
+        <div class="step-num">3</div>
+        <h3>Formation et suivi</h3>
+        <p>Vous suivez votre formation avec un suivi régulier de la progression et des ajustements si nécessaire.</p>
+      </div>
+      <div class="process-step reveal" style="transition-delay: 0.3s;">
+        <div class="step-num">4</div>
+        <h3>Bilan et attestation</h3>
+        <p>En fin de parcours, un bilan complet et une attestation de formation vous sont remis.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FINANCEMENT ═══ -->
+<section class="section" id="financement">
+  <div class="container">
+    <div class="section-label reveal">💰 Financement</div>
+    <div class="section-title reveal">Votre formation peut être<br>prise en charge à 100%</div>
+    <div class="finance-intro reveal">Entreprises et particuliers disposent de dispositifs pour financer leurs formations linguistiques. Pour les entreprises, le coût peut être considérablement réduit, voire totalement couvert grâce aux OPCO. Les particuliers peuvent mobiliser leur CPF. Dans tous les cas, nous vous accompagnons dans vos démarches.</div>
+
+    <div class="finance-callout reveal">
+      <div class="fc-icon">🏅</div>
+      <div><strong>Vocelia est certifié Qualiopi</strong> Nos formations sont directement éligibles à une prise en charge OPCO, CPF et FNE-Formation. Cette certification nationale est votre garantie de qualité — et votre passeport vers un financement facilité.</div>
+    </div>
+
+    <div class="finance-grid">
+      <!-- OPCO -->
+      <div class="finance-card reveal">
+        <span class="f-badge">Dispositif principal</span>
+        <h3>OPCO — Opérateurs de Compétences</h3>
+        <div class="f-who">Pour les entreprises de – de 50 salariés principalement</div>
+        <p>Les 11 OPCO en France financent tout ou partie des formations professionnelles, dont les formations linguistiques. Le montant de prise en charge dépend de votre branche et des fonds disponibles.</p>
+        <p>Votre entreprise est rattachée à un OPCO selon sa convention collective. Le financement peut couvrir les frais pédagogiques, les rémunérations et même les frais annexes (transport, hébergement).</p>
+        <div class="f-highlight">
+          <strong>✅ Bonne nouvelle :</strong> Vocelia est <strong>certifié Qualiopi</strong>, ce qui signifie que nos formations sont directement éligibles à une prise en charge par votre OPCO. Vous n'avez aucune démarche supplémentaire à effectuer de ce côté.
+        </div>
+        <ul class="f-steps">
+          <li>Identifiez votre OPCO (via votre convention collective ou votre n° SIRET)</li>
+          <li>Contactez-nous pour recevoir un devis et un programme de formation</li>
+          <li>Déposez votre dossier de prise en charge auprès de votre OPCO</li>
+          <li>Une fois validé, la formation démarre selon le planning convenu</li>
+          <li>Le financement est versé après confirmation de la présence des participants</li>
+        </ul>
+      </div>
+
+      <!-- CPF -->
+      <div class="finance-card reveal" style="transition-delay: 0.1s;">
+        <span class="f-badge">Entreprises et Particuliers</span>
+        <h3>CPF — Compte Personnel de Formation</h3>
+        <div class="f-who">Pour tous les actifs : salariés, indépendants, demandeurs d'emploi</div>
+        <p>Chaque actif cumule 500 € par an sur son CPF (plafonné à 5 000 €). Depuis février 2026, le financement CPF pour les certifications linguistiques (Répertoire Spécifique : TOEIC, LILATE, Linguaskill…) est plafonné à 1 500 € par formation, avec une participation forfaitaire de 103,20 €.</p>
+        <p><strong>Particuliers :</strong> vous pouvez utiliser directement votre CPF pour financer votre formation. <strong>Entreprises :</strong> vous pouvez abonder le CPF de vos salariés pour couvrir la participation ou compléter le financement.</p>
+        <div class="f-highlight">
+          <strong>Astuce :</strong> en combinant CPF du salarié + financement OPCO de l'entreprise, vous pouvez réduire le reste à charge à zéro. Le CPF co-financé par l'employeur exonère le salarié de la participation de 103,20 €.
+        </div>
+        <ul class="f-steps">
+          <li>Le salarié consulte son solde sur moncompteformation.gouv.fr</li>
+          <li>L'entreprise valide le projet et propose éventuellement un abondement</li>
+          <li>Le salarié s'inscrit à la formation certifiante de son choix</li>
+          <li>La formation se déroule, en tout ou partie sur le temps de travail</li>
+        </ul>
+        <a href="https://www.moncompteformation.gouv.fr" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:1rem;padding:0.5rem 1rem;background:var(--accent);color:white;border-radius:8px;font-size:0.82rem;font-weight:600;text-decoration:none;transition:background 0.25s;">🔗 Accéder à Mon Compte Formation</a>
+      </div>
+
+      <!-- Plan de développement -->
+      <div class="finance-card reveal">
+        <span class="f-badge">Initiative employeur</span>
+        <h3>Plan de développement des compétences</h3>
+        <div class="f-who">Pour toutes les entreprises, quelle que soit la taille</div>
+        <p>L'employeur a une obligation légale de formation de ses salariés, incluant l'adaptation au poste et le développement des compétences. Les formations linguistiques entrent pleinement dans ce cadre.</p>
+        <p>L'entreprise finance directement sur son budget formation. Pour les entreprises de moins de 50 salariés, l'OPCO peut contribuer au financement via les fonds mutualisés. Les formations se déroulent sur le temps de travail avec maintien de la rémunération.</p>
+        <div class="f-highlight">
+          <strong>À savoir :</strong> les budgets OPCO ne sont pas illimités et peuvent s'épuiser avant la fin de l'année. Anticipez vos demandes de prise en charge en début d'exercice.
+        </div>
+        <ul class="f-steps">
+          <li>L'entreprise établit son plan de formation annuel</li>
+          <li>Contactez Vocelia pour obtenir un devis et un programme adapté</li>
+          <li>Elle demande la prise en charge auprès de son OPCO (si – de 50 salariés)</li>
+          <li>La formation est planifiée et exécutée sur le temps de travail</li>
+        </ul>
+      </div>
+
+      <!-- FNE + Loi Immigration -->
+      <div class="finance-card reveal" style="transition-delay: 0.1s;">
+        <span class="f-badge">Cas spécifiques</span>
+        <h3>FNE-Formation et Loi Immigration (FLE)</h3>
+        <div class="f-who">Entreprises en mutation / Salariés allophones</div>
+        <p><strong>FNE-Formation :</strong> pour les entreprises en difficulté, en mutation ou en reprise d'activité, l'État peut cofinancer de 40% à 100% des coûts de formation selon la taille de l'entreprise.</p>
+        <p><strong>Loi Immigration (depuis janvier 2025) :</strong> les salariés allophones signataires du contrat d'intégration républicaine bénéficient de jusqu'à 80 heures de formation en français considérées comme du temps de travail effectif, avec maintien de la rémunération.</p>
+        <div class="f-highlight">
+          <strong>Pour le FLE :</strong> c'est un double avantage — l'entreprise forme ses salariés allophones dans le cadre légal tout en améliorant la communication interne. Le salarié peut aussi mobiliser son CPF avec autorisation d'absence de droit.
+        </div>
+      </div>
+    </div>
+
+    <!-- SIMULATEUR DE FINANCEMENT -->
+    <div class="simulator reveal" id="simulator">
+      <h3>🧮 Simulateur de financement</h3>
+      <div class="sim-subtitle">Estimez rapidement la part qui peut être prise en charge par votre OPCO ou votre CPF.</div>
+      <div class="sim-row">
+        <div class="sim-field">
+          <label>Vous êtes…</label>
+          <select id="simProfil">
+            <option value="">— Choisir —</option>
+            <option value="entreprise_petite">Entreprise (moins de 50 salariés)</option>
+            <option value="entreprise_grande">Entreprise (50+ salariés)</option>
+            <option value="particulier">Particulier</option>
+          </select>
+        </div>
+        <div class="sim-field">
+          <label>Dispositif de financement</label>
+          <select id="simDispositif">
+            <option value="">— Choisir —</option>
+            <option value="opco">OPCO</option>
+            <option value="cpf">CPF</option>
+            <option value="plan">Plan de développement (entreprise)</option>
+            <option value="fne">FNE-Formation</option>
+          </select>
+        </div>
+      </div>
+      <div class="sim-row">
+        <div class="sim-field">
+          <label>Coût estimé de la formation (€ HT)</label>
+          <input type="number" id="simCout" placeholder="Ex : 1 500" min="0">
+        </div>
+        <div class="sim-field">
+          <label>Solde CPF disponible (€) <span style="color:var(--muted);font-weight:400;">— si applicable</span></label>
+          <input type="number" id="simCPF" placeholder="Ex : 3 200" min="0">
+        </div>
+      </div>
+      <button class="btn btn-accent" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="simulateFinancement()">Estimer ma prise en charge →</button>
+      <div class="sim-result" id="simResult">
+        <div class="sim-result-grid">
+          <div class="sim-result-item">
+            <div class="sri-label">Coût total</div>
+            <div class="sri-value" id="simTotal">0 €</div>
+          </div>
+          <div class="sim-result-item">
+            <div class="sri-label">Prise en charge estimée</div>
+            <div class="sri-value green" id="simPriseEnCharge">0 €</div>
+          </div>
+          <div class="sim-result-item">
+            <div class="sri-label">Reste à votre charge</div>
+            <div class="sri-value" id="simReste">0 €</div>
+          </div>
+        </div>
+        <div class="sim-result-note" id="simNote"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ QUALIOPI SECTION ═══ -->
+<div class="qualiopi-banner">
+  <div class="container">
+    <div class="qualiopi-inner">
+      <div class="qualiopi-shield">🏅</div>
+      <h3>Vocelia est <span>certifié Qualiopi</span></h3>
+      <p>La certification Qualiopi est la marque nationale de qualité des organismes de formation. Elle atteste du sérieux de nos processus pédagogiques et vous garantit des formations professionnelles rigoureuses, évaluées et reconnues par l'État.</p>
+      <p>Concrètement, cette certification vous ouvre les portes de tous les financements publics et mutualisés. Sans Qualiopi, aucun financement OPCO ou CPF n'est possible — avec Vocelia, tout est en règle.</p>
+      <div class="qualiopi-badges">
+        <div class="qualiopi-tag"><span class="qt-icon">✅</span> Éligible OPCO</div>
+        <div class="qualiopi-tag"><span class="qt-icon">✅</span> Éligible CPF</div>
+        <div class="qualiopi-tag"><span class="qt-icon">✅</span> Éligible FNE-Formation</div>
+        <div class="qualiopi-tag"><span class="qt-icon">✅</span> Qualité certifiée par l'État</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CTA FINAL ═══ -->
+<section class="cta-section">
+  <div class="cta-dots">
+    <div class="d d1"></div>
+    <div class="d d2"></div>
+    <div class="d d3"></div>
+    <div class="d d4"></div>
+  </div>
+  <div class="container">
+    <div class="cta-content">
+      <h2>Prêt à vous lancer ?</h2>
+      <p>Entreprise ou particulier, configurez votre formation en quelques clics. Obtenez votre devis instantanément et passez commande en ligne — paiement sécurisé.</p>
+      <a href="vocelia-devis.html" class="btn btn-accent btn-large">Devis gratuit et commande en ligne →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ CONTACT ═══ -->
+<section class="contact-section" id="contact">
+  <div class="container">
+    <div class="contact-inner">
+      <h3>📬 Contactez-nous</h3>
+      <p>Une question sur nos formations, les financements ou les certifications ? Notre équipe vous répond sous 24h.</p>
+      <a href="/cdn-cgi/l/email-protection#d1bdb8bfb6a4b0a2b4a3a7b8b2b4ffb7bea3bcb0a5b8bebf91b6bcb0b8bdffb2bebc" class="contact-email">✉️ <span class="__cf_email__" data-cfemail="e78b8e89809286948295918e8482c98188958a86938e8889a7808a868e8bc984888a">[email&#160;protected]</span></a>
+      <div class="contact-details">Vocelia — par Nathalie Avédissian Traduction — Toulon (83)</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ RGPD ═══ -->
+<section style="padding:3rem 0;background:var(--paper);" id="rgpd">
+  <div class="container">
+    <div style="max-width:800px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:2rem;">
+      <h3 style="font-family:'Playfair Display',serif;font-size:1.2rem;margin-bottom:1rem;">🔒 Protection des données et confidentialité</h3>
+      <p style="font-size:0.88rem;color:var(--muted);line-height:1.8;margin-bottom:0.8rem;">Conformément au Règlement Général sur la Protection des Données (RGPD — Règlement UE 2016/679), Vocelia s'engage à protéger vos données personnelles. Les informations collectées via notre configurateur de devis (nom, email, téléphone, société) sont exclusivement utilisées pour le traitement de votre demande de formation et la gestion de votre commande.</p>
+      <p style="font-size:0.88rem;color:var(--muted);line-height:1.8;margin-bottom:0.8rem;">Vos données ne sont jamais transmises à des tiers à des fins commerciales. Les paiements sont traités de manière sécurisée par Stripe — vos coordonnées bancaires ne transitent jamais par nos serveurs.</p>
+      <p style="font-size:0.88rem;color:var(--muted);line-height:1.8;margin-bottom:0.8rem;">Vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité de vos données. Pour toute demande relative à vos données personnelles, contactez-nous à <a href="/cdn-cgi/l/email-protection#c0aca9aea7b5a1b3a5b2b6a9a3a5eea6afb2ada1b4a9afae80a7ada1a9aceea3afad" style="color:var(--accent);"><span class="__cf_email__" data-cfemail="ff939691988a9e8c9a8d89969c9ad199908d929e8b969091bf98929e9693d19c9092">[email&#160;protected]</span></a>.</p>
+      <p style="font-size:0.88rem;color:var(--muted);line-height:1.8;">Responsable du traitement : Nathalie Avédissian Traduction — Vocelia, Toulon (83).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-logo">Voce<span>lia</span></div>
+        <div class="footer-sub">par Nathalie Avédissian Traduction</div>
+      </div>
+      <div class="footer-right">
+        <a href="/cdn-cgi/l/email-protection#315d585f564450425443475852541f575e435c5045585e5f71565c50585d1f525e5c"><span class="__cf_email__" data-cfemail="a0ccc9cec7d5c1d3c5d2d6c9c3c58ec6cfd2cdc1d4c9cfcee0c7cdc1c9cc8ec3cfcd">[email&#160;protected]</span></a><br>
+        © 2026 Vocelia — Tous droits réservés · <a href="#rgpd" style="color:var(--red);">Confidentialité</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// Nav scroll effect
+const nav = document.getElementById('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// Mobile toggle
+document.getElementById('navToggle').addEventListener('click', () => {
+  document.getElementById('navLinks').classList.toggle('open');
+});
+
+// Close mobile menu on link click
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.getElementById('navLinks').classList.remove('open');
+  });
+});
+
+// Scroll reveal
+const reveals = document.querySelectorAll('.reveal');
+// First hide them via JS so content shows if JS fails
+reveals.forEach(el => el.classList.add('hidden'));
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.remove('hidden');
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.15 });
+reveals.forEach(el => observer.observe(el));
+
+// ── FINANCING SIMULATOR ──
+function simulateFinancement() {
+  const profil = document.getElementById('simProfil').value;
+  const dispositif = document.getElementById('simDispositif').value;
+  const cout = parseFloat(document.getElementById('simCout').value) || 0;
+  const cpfSolde = parseFloat(document.getElementById('simCPF').value) || 0;
+  const result = document.getElementById('simResult');
+  
+  if (!profil || !dispositif || cout <= 0) {
+    result.classList.remove('active');
+    return;
+  }
+
+  let priseEnCharge = 0;
+  let note = '';
+  const ticketMod = 103.20;
+
+  if (dispositif === 'opco') {
+    if (profil === 'entreprise_petite') {
+      // TPE/PME : OPCO peut couvrir 50-100%
+      priseEnCharge = Math.min(cout, cout * 0.8);
+      note = 'Les OPCO couvrent généralement 50% à 100% pour les entreprises de moins de 50 salariés. Estimation ici à 80%. Le montant exact dépend de votre branche et des fonds disponibles.';
+    } else if (profil === 'entreprise_grande') {
+      priseEnCharge = Math.min(cout, cout * 0.3);
+      note = 'Les entreprises de 50+ salariés bénéficient d\'une prise en charge plus limitée par l\'OPCO (estimation : 30%). Le reste est financé sur le plan de formation interne.';
+    } else {
+      priseEnCharge = 0;
+      note = 'Les OPCO financent les formations des salariés via l\'entreprise. En tant que particulier, privilégiez le CPF.';
+    }
+  } else if (dispositif === 'cpf') {
+    // Plafond RS : 1500€ depuis fev 2026
+    const plafondRS = 1500;
+    const cpfUtilisable = Math.min(cpfSolde, plafondRS);
+    priseEnCharge = Math.min(cout, cpfUtilisable);
+    const resteApresPlafond = Math.max(0, cout - priseEnCharge);
+    note = `Plafond CPF pour les certifications linguistiques (Répertoire Spécifique) : 1 500 €. Participation forfaitaire obligatoire : ${ticketMod.toFixed(2)} €.`;
+    if (cpfSolde > plafondRS) {
+      note += ` Votre solde CPF de ${cpfSolde.toLocaleString('fr-FR')} € dépasse le plafond : seuls ${plafondRS} € sont mobilisables pour cette formation.`;
+    }
+    if (profil !== 'particulier') {
+      note += ' L\'employeur peut abonder le CPF pour couvrir le reste et exonérer le salarié du ticket modérateur.';
+    }
+  } else if (dispositif === 'plan') {
+    if (profil === 'entreprise_petite') {
+      priseEnCharge = Math.min(cout, cout * 0.7);
+      note = 'Le plan de développement des compétences est financé par l\'entreprise, avec un soutien possible de l\'OPCO pour les moins de 50 salariés (estimation : 70%).';
+    } else if (profil === 'entreprise_grande') {
+      priseEnCharge = cout;
+      note = 'L\'entreprise finance à 100% sur son budget formation. Pas de prise en charge OPCO directe pour les 50+ salariés, mais le coût est déductible.';
+    } else {
+      priseEnCharge = 0;
+      note = 'Le plan de développement des compétences est réservé aux entreprises. En tant que particulier, privilégiez le CPF.';
+    }
+  } else if (dispositif === 'fne') {
+    if (profil.startsWith('entreprise')) {
+      priseEnCharge = Math.min(cout, cout * 0.7);
+      note = 'Le FNE-Formation couvre de 40% à 100% selon la taille de l\'entreprise et sa situation (difficulté, mutation, reprise). Estimation conservatrice : 70%.';
+    } else {
+      priseEnCharge = 0;
+      note = 'Le FNE-Formation est réservé aux entreprises en difficulté ou en mutation. En tant que particulier, privilégiez le CPF.';
+    }
+  }
+
+  const reste = Math.max(0, cout - priseEnCharge);
+
+  document.getElementById('simTotal').textContent = cout.toLocaleString('fr-FR') + ' €';
+  document.getElementById('simPriseEnCharge').textContent = priseEnCharge.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' €';
+  document.getElementById('simReste').textContent = reste.toLocaleString('fr-FR', {maximumFractionDigits:0}) + ' €';
+  document.getElementById('simNote').textContent = note;
+  result.classList.add('active');
+}
+
+// ── FULL PAGE SPHERE CONSTELLATION ──
+(function() {
+  const canvas = document.getElementById('bgCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w, h, spheres;
+  const colors = [
+    { r:232, g:96, b:60 },   // coral #E8603C
+    { r:11, g:122, b:117 },  // teal #0B7A75
+    { r:18, g:181, b:174 },  // teal2 #12B5AE
+    { r:28, g:31, b:46 },    // ink #1C1F2E
+    { r:216, g:206, b:188 }  // sand3 #DDD0B8
+  ];
+  const SPHERE_COUNT = 25;
+  const CONNECTION_DIST = 220;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+
+  function createSpheres() {
+    spheres = [];
+    for (let i = 0; i < SPHERE_COUNT; i++) {
+      const col = colors[Math.floor(Math.random() * colors.length)];
+      spheres.push({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.35,
+        vy: (Math.random() - 0.5) * 0.35,
+        baseR: Math.random() * 18 + 8,
+        r: 0,
+        color: col,
+        opacity: Math.random() * 0.3 + 0.15,
+        pulseSpeed: Math.random() * 0.02 + 0.008,
+        pulseOffset: Math.random() * Math.PI * 2,
+        glowSize: Math.random() * 20 + 10
+      });
+    }
+  }
+
+  let time = 0;
+  function draw() {
+    time += 1;
+    ctx.clearRect(0, 0, w, h);
+
+    // Update pulse
+    for (const s of spheres) {
+      s.r = s.baseR + Math.sin(time * s.pulseSpeed + s.pulseOffset) * 4;
+    }
+
+    // Draw connections
+    for (let i = 0; i < spheres.length; i++) {
+      for (let j = i + 1; j < spheres.length; j++) {
+        const dx = spheres[i].x - spheres[j].x;
+        const dy = spheres[i].y - spheres[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < CONNECTION_DIST) {
+          const opacity = (1 - dist / CONNECTION_DIST) * 0.12;
+          const midCol = spheres[i].color;
+          ctx.strokeStyle = `rgba(${midCol.r},${midCol.g},${midCol.b},${opacity})`;
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.moveTo(spheres[i].x, spheres[i].y);
+          // Slight curve for organic feel
+          const cx = (spheres[i].x + spheres[j].x) / 2 + Math.sin(time * 0.005 + i) * 15;
+          const cy = (spheres[i].y + spheres[j].y) / 2 + Math.cos(time * 0.005 + j) * 15;
+          ctx.quadraticCurveTo(cx, cy, spheres[j].x, spheres[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Draw spheres with glow
+    for (const s of spheres) {
+      // Outer glow
+      const grd = ctx.createRadialGradient(s.x, s.y, s.r * 0.2, s.x, s.y, s.r + s.glowSize);
+      grd.addColorStop(0, `rgba(${s.color.r},${s.color.g},${s.color.b},${s.opacity * 0.8})`);
+      grd.addColorStop(0.4, `rgba(${s.color.r},${s.color.g},${s.color.b},${s.opacity * 0.3})`);
+      grd.addColorStop(1, `rgba(${s.color.r},${s.color.g},${s.color.b},0)`);
+      ctx.fillStyle = grd;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r + s.glowSize, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Core sphere
+      const coreGrd = ctx.createRadialGradient(s.x - s.r * 0.3, s.y - s.r * 0.3, s.r * 0.1, s.x, s.y, s.r);
+      coreGrd.addColorStop(0, `rgba(${Math.min(255, s.color.r + 80)},${Math.min(255, s.color.g + 80)},${Math.min(255, s.color.b + 80)},${s.opacity})`);
+      coreGrd.addColorStop(1, `rgba(${s.color.r},${s.color.g},${s.color.b},${s.opacity * 0.6})`);
+      ctx.fillStyle = coreGrd;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Move
+      s.x += s.vx;
+      s.y += s.vy;
+
+      // Soft bounce
+      if (s.x < -50) s.x = w + 50;
+      if (s.x > w + 50) s.x = -50;
+      if (s.y < -50) s.y = h + 50;
+      if (s.y > h + 50) s.y = -50;
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  createSpheres();
+  draw();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocelia — Paiement confirmé</title>
+<style>
+:root { --ink:#1C1F2E; --teal:#0B7A75; --sand:#F6F1E9; --cream:#FFFDF8; --muted:#6B7280; --border:#D8CEBC; }
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',Arial,sans-serif; background:var(--sand); color:var(--ink); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem; }
+.card { background:var(--cream); border:2px solid var(--teal); border-radius:16px; padding:3rem; max-width:500px; width:100%; box-shadow:0 4px 20px rgba(0,0,0,0.06); text-align:center; }
+.icon { font-size:4rem; margin-bottom:1rem; }
+h1 { color:var(--teal); font-size:1.5rem; margin-bottom:0.5rem; }
+p { color:var(--muted); line-height:1.7; margin-bottom:1rem; }
+.btn { display:inline-block; padding:0.8rem 2rem; background:var(--teal); color:white; text-decoration:none; border-radius:10px; font-weight:600; margin-top:1rem; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="icon">✅</div>
+  <h1>Paiement confirmé !</h1>
+  <p id="msg">Merci pour votre confiance. Vous allez recevoir un email de confirmation.</p>
+  <p>Notre équipe vous contactera pour organiser vos séances de formation.</p>
+  <a href="/" class="btn">Retour au site</a>
+</div>
+<script>
+const params = new URLSearchParams(window.location.search);
+const ref = params.get('ref');
+const mode = params.get('mode');
+if (ref) {
+  const msg = mode === 'acompte'
+    ? 'Votre acompte pour le devis ' + ref + ' a été reçu. Le solde sera à régler avant le début de la formation.'
+    : 'Votre paiement pour le devis ' + ref + ' a été confirmé.';
+  document.getElementById('msg').textContent = msg;
+}
+</script>
+</body>
+</html>
